@@ -1,0 +1,46 @@
+"use strict";
+
+let fs = require("fs");
+let path = require("path");
+let SamplejsDB = require("../lib/SamplejsDBMS.js");
+
+let testCasesDir = path.join(__dirname, "cases");
+
+/**
+ * Execute a series of tests against a SamplejsDB object. A test consists of a command and optional arguments array
+ * and expected output.
+ */
+function executeTestCase(name, steps) {
+  console.log("Executing test case: " + name);
+
+  let db = new SamplejsDB();
+  let failed = false;
+
+  for (let i = 0; i < steps.length; i++) {
+    let command = steps[i].command;
+    let args = steps[i].args;
+
+    if (typeof db[command] === "function" && db[command].length === args.length) {
+      let output = db[command].apply(db, steps[i].args);
+      if (output !== steps[i].output) {
+        console.log("Error on command [" + (i + 1) + "] - expected output " + steps[i].output +
+          " did not match actual output " + output);
+        failed = true;
+      }
+    }
+  }
+
+  console.log("Test case " + (failed ? "failed!" : "passed!"));
+}
+
+/**
+ * Reads each test file, parses it into JSON and runs executeTestCase on it.
+ */
+function readTestCases(testCaseFiles) {
+  for (let i = 0; i < testCaseFiles.length; i++) {
+    let steps = fs.readFileSync(path.join(testCasesDir, testCaseFiles[i]), "utf8");
+    executeTestCase(testCaseFiles[i], JSON.parse(steps));
+  }
+}
+
+readTestCases(fs.readdirSync(testCasesDir));

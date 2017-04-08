@@ -1,0 +1,20 @@
+{
+  "name": "samplejsdb",
+  "version": "1.0.0",
+  "description": "In-memory database.",
+  "private": "true",
+  "main": "index.js",
+  "scripts": {
+    "samplejsdb": "bin/samplejsdb",
+    "test": "test/runner"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wsierradev/samplejsdb"
+  },
+  "author": "William Sierra Jr.",
+  "bugs": {
+    "url": "https://github.com/wsierradev/samplejsdb/"
+  },
+  "homepage": "https://github.com/wsierradev/samplejsdb"
+}

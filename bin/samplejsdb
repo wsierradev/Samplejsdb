@@ -1,0 +1,61 @@
+#!/usr/bin/env node
+
+"use strict";
+
+let readline = require("readline");
+let SamplejsDB = require("../lib/SamplejsDBMS.js");
+
+let db = new SamplejsDB();
+
+let COMMANDS = {
+  "SET": "set",
+  "GET": "get",
+  "UNSET": "unset",
+  "NUMEQUALTO": "numEqualTo",
+  "BEGIN": "begin",
+  "ROLLBACK": "rollback",
+  "COMMIT": "commit",
+  "HELP": "help",
+  "END": "end"
+};
+
+function executeCommand(command, args) {
+  let result = db[command].apply(db, args);
+  if (result !== undefined) {
+    console.log(result);
+  }
+}
+
+function printHelp() {
+  console.log("Available commands:");
+  for (let key in COMMANDS) {
+    console.log(key);
+  }
+}
+
+let rl = readline.createInterface(process.stdin, process.stdout);
+
+rl.setPrompt("> ");
+rl.prompt();
+
+rl.on("line", function(line) {
+  let args = line.split(" ");
+  let command = COMMANDS[args.shift().toUpperCase()];
+
+  if (typeof db[command] === "function" && db[command].length === args.length) {
+    executeCommand(command, args);
+  }
+  else if (command === COMMANDS.HELP) {
+    printHelp();
+  }
+  else if (command === COMMANDS.END) {
+    rl.close();
+  }
+  else {
+    console.log("Unknown command, enter HELP for available commands");
+  }
+
+  rl.prompt();
+}).on("close", function() {
+  process.exit();
+});
